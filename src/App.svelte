@@ -1,24 +1,46 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onMount, afterUpdate } from 'svelte'
   import { Client } from './client'
   import Canvas, { canvas, context } from './Canvas.svelte'
   import render from './render.js'
   import config from './config.js'
+  import Modal from './Modal.svelte'
+  import Core from './Core.svelte'
+  import { width, height } from './store.js'
 
 
   let player_cells = []
   let food_cells = []
-  let playerName = ''
   let playerPos = {x: 0, y: 0}
   let gameData
   let inGame = false
+  let target
+  let mouseInterval
+  let targetUpdated = false
 
-  const client = new Client('ws://127.0.0.1:8080')
+  const gameStarted = () => {
+    inGame = true
+    mouseInterval = setInterval(() => {
+      if (client.connected() && inGame && target && targetUpdated) {
+        client.notify("target", target)
+        targetUpdated = false
+      }
+    }, 1000/60)
+  }
+
+  const gameOver = () => {
+    inGame = false
+    if (mouseInterval) {
+      clearInterval(mouseInterval)
+    }
+  }
+
+  const client = new Client('ws://192.168.1.52:8080')
   client.connect()
   client.handleNotifications['update'] = handleUpdate
   client.handleNotifications['pong'] = () => {}
-  client.handleNotifications['notify_game_started'] = () => {inGame = true}
-  client.handleNotifications['notify_game_over'] = () => {inGame = false}
+  client.handleNotifications['notify_game_started'] = gameStarted
+  client.handleNotifications['notify_game_over'] = gameOver
 
 
   function handleUpdate(data) {
@@ -30,27 +52,24 @@
   }
 
   function renderFrame() {
-    render.renderUpdate(context, gameData)
+    render.renderUpdate(context, gameData, $width, $height)
   }
+
 
   function onMouseMove(event) {
     if (client.connected() && inGame) {
-      var canvasRect = canvas.getBoundingClientRect();
-      const canvasX = event.clientX - canvasRect.left
-      const canvasY = config.screenHeight - (event.clientY - canvasRect.top)
-      const originX = playerPos.x - config.screenWidth / 2
-      const originY = playerPos.y - config.screenHeight / 2
-      const x = originX + canvasX
-      const y = originY + canvasY
-      client.notify(
-        'target',
-        {
-          x: x,
-          y: y,
-        }
-      )
+      const centerX = $width / 2
+      const centerY = $height / 2
+      const dx =  event.clientX - centerX
+      const dy = ($height - event.clientY) - centerY
+      target = {
+        x: dx,
+        y: dy,
+      }
+      targetUpdated = true
     }
   }
+
 
   function onKeyDown(event) {
     if (event.keyCode === 32) {
@@ -61,23 +80,23 @@
   }
 
 
-  function onPlay() {
-    client.notify('enter_game', {player_name: playerName})
-  }
-
   setInterval(() => {
     if (client.connected()) {
       client.notify('ping')
     }
   }, 1000)
 
+
+
 </script>
 
-<!-- <svelte:window on:keydown={onKeyDown} on:mousemove={onMouseMove} ></svelte:window> -->
-<!-- <input type="text" bind:value={playerName}> -->
-<!-- <button disabled={!playerName} on:click={onPlay}>Play</button> -->
-<!-- <br> -->
-<Canvas render={renderFrame}></Canvas>
+
+<svelte:window on:keydown={onKeyDown} on:mousemove={onMouseMove} ></svelte:window>
+<Modal>
+  <Core {client}/>
+  <Canvas render={renderFrame}></Canvas>
+</Modal>
+
 
 
 <style>

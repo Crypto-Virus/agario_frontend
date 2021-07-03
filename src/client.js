@@ -40,7 +40,7 @@ export class Client {
   }
 
   onmessage = (event) => {
-    console.log(`Received Message: ${event.data}`)
+    // console.log(`Received Message: ${event.data}`)
     this.dateReceived(event.data)
   }
 
@@ -49,7 +49,6 @@ export class Client {
       this.connect()
     }, 1000)
   }
-
 
 
   getMsgId() {
