@@ -6,8 +6,7 @@
 <script>
 
   import { onMount, onDestroy, setContext } from 'svelte'
-  import config from './config.js'
-  import {width, height, pixelRatio} from './store.js'
+  import {width, height, pixelRatio, inGameStatus, connectionStatus} from './store.js'
 
   export let render = () => {}
 
@@ -15,11 +14,20 @@
 
   onMount(() => {
     context = canvas.getContext('2d')
-
-    return createLoop(() => {
-      render()
-    })
   })
+
+  function startRendering() {
+    if (!frame) {
+      createLoop(render)
+    }
+  }
+
+  function stopRendering() {
+    if (frame) {
+      cancelAnimationFrame(frame)
+    }
+    frame = null
+  }
 
   function createLoop (fn) {
     (function loop() {
@@ -37,6 +45,19 @@
     pixelRatio.set(window.devicePixelRatio)
   }
 
+
+  function onInGameStatusChange(status) {
+    if (status === true) {
+      startRendering()
+    } else {
+      stopRendering()
+    }
+  }
+
+  $: onInGameStatusChange($inGameStatus)
+  $: if ($connectionStatus === false) {
+    stopRendering()
+  }
 </script>
 
 
@@ -55,8 +76,5 @@
 <style>
   canvas {
     display: block;
-    /* border: solid black 1px; */
-    /* width: 5000px;
-    height: 5000px; */
   }
 </style>

@@ -19,15 +19,13 @@ function renderUpdate(context, data, canvasWidth, canvasHeight) {
   } else if (canvasHeight > canvasWidth) {
     shiftW = (canvasHeight - canvasWidth) / 2
   }
-
-  context.save()
   context.clearRect(0, 0, canvasWidth, canvasHeight)
   drawGrid(context, canvasWidth, canvasHeight, topLeft, scale, shiftW, shiftH)
   draw_food_cells(context, topLeft, scale, shiftW, shiftH, data.food)
   draw_player_cells(context, topLeft, scale, shiftW, shiftH, data.cells)
-  drawFps(context)
   context.stroke()
-  context.restore()
+  drawFps(context)
+
 }
 
 function draw_player_cells(context, topLeft, scale, shiftW, shiftH, cells) {

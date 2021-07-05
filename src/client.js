@@ -1,4 +1,5 @@
 
+import { connectionStatus } from './store.js'
 
 export class Client {
 
@@ -26,15 +27,18 @@ export class Client {
   }
 
   onopen = (event) => {
+    connectionStatus.set(true)
     console.log('Opened connection to server')
   }
 
   onclose = (event) => {
+    connectionStatus.set(false)
     console.log('Closed connection to server')
     this.reconnect()
   }
 
   onerror = (event) => {
+    connectionStatus.set(false)
     console.log(`Connection errored with server. Error [${event}]`)
     this.reconnect()
   }
@@ -52,12 +56,12 @@ export class Client {
 
 
   getMsgId() {
-    msgId++
-    if (msgID > 100000) msgID = 0
-    return msgID
+    this.msgId++
+    if (this.msgId > 100000) this.msgId = 0
+    return this.msgId
   }
 
-  async remoteCall(method, params = {}) {
+  async remoteCall(method, params = null) {
     if (!this.connected()) {
       throw new Error('Client is not connected!')
     }
@@ -76,7 +80,7 @@ export class Client {
     return response
   }
 
-  notify(method, params = {}) {
+  notify(method, params = null) {
     if (!this.connected()) {
       throw new Error('Client is not connected!')
     }
@@ -105,13 +109,15 @@ export class Client {
       if (id) {
         const promise = this.promises[id]
         if (promise) {
-          promise.reject(error.message)
+          delete this.promises[id]
+          promise.reject(new Error(error.message))
         }
       }
     }
     if (id) {
       const promise = this.promises[id]
       if (promise) {
+        delete this.promises[id]
         promise.resolve(result)
       }
     }

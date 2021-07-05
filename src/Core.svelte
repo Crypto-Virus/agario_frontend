@@ -3,6 +3,8 @@
   import { getContext } from 'svelte'
 
   import Dialog from './Dialog.svelte'
+  import GameOverDialog from './GameOverDialog.svelte'
+  import { inGameStatus } from './store.js'
 
   export let client
 
@@ -10,9 +12,9 @@
 
   const modalErrorMsg = writable("")
 
-  const onOkay = (text) => {
+  const play = async () => {
     try {
-      enterGame(text)
+      await enterGame()
     } catch (e) {
       $modalErrorMsg = e.message
       return false
@@ -20,16 +22,31 @@
     return true
   }
 
-  function enterGame(playerName) {
-    console.assert(playerName, "Player name cannot be empty")
-    client.notify('enter_game', {player_name: playerName})
+  async function enterGame() {
+    await client.remoteCall('enter_game')
+    $inGameStatus = true
   }
 
-  export function openMainMenu() {
+  export function openDialog() {
     open(
       Dialog,
       {
         message: "Enter player name",
+        modalErrorMsg,
+        play
+      },
+      {
+        closeButton: false,
+        closeOnEsc: false,
+        closeOnOuterClick: false,
+      }
+    )
+  }
+
+  export function gameOverMenu() {
+    open(
+      GameOverDialog,
+      {
         modalErrorMsg,
         hasForm: true,
         onOkay
@@ -43,7 +60,7 @@
   }
 
 
-  openMainMenu()
+  openDialog()
 
 
 

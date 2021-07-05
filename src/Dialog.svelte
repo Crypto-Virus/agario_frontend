@@ -1,39 +1,36 @@
 <script>
   import { getContext } from 'svelte';
-  export let message;
+  import { Circle3 } from 'svelte-loading-spinners'
+  import { connectionStatus } from './store.js'
+
+  export let message = "Click to Play";
   export let modalErrorMsg;
-	export let hasForm = false;
-	export let onOkay = () => {};
+  export let play = () => {};
 
   const { close } = getContext('simple-modal');
 
-	let value;
-	let onChange = () => {};
-
-	function _onOkay() {
-		if (onOkay(value)) {
+  async function _play() {
+    if (await play()) {
       close();
     }
-	}
+  }
 
-	$: onChange(value)
 </script>
 
 
-<h2>{message}</h2>
-
-{#if hasForm}
-	<input
-    type="text"
-	  bind:value
-	  on:keydown={e => e.which === 13 && (value) && _onOkay()} />
+{#if !$connectionStatus}
+<div class="connectingContainer">
+    <h3>Connecting</h3>
+    <Circle3 size="60" color="red" unit="px" duration="1.5s"></Circle3>
+  </div>
+{:else}
+  <h2>{message}</h2>
+  <div class="buttons">
+    <button on:click={_play}>
+      Play
+    </button>
+  </div>
 {/if}
-
-<div class="buttons">
-	<button on:click={_onOkay} disabled={!value}>
-		Play
-	</button>
-</div>
 
 {#if $modalErrorMsg}
 <div class="error">
@@ -45,18 +42,14 @@
 
 <style>
   h2 {
-		font-size: 2rem;
-		text-align: center;
-	}
+    font-size: 2rem;
+    text-align: center;
+  }
 
-	input {
-		width: 100%;
-	}
-
-	.buttons {
-		display: flex;
-		justify-content: center;
-	}
+  .buttons {
+    display: flex;
+    justify-content: center;
+  }
 
   button {
     flex-grow: 1;
@@ -65,5 +58,13 @@
   .error p {
     color: red;
   }
+
+  .connectingContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
 
 </style>

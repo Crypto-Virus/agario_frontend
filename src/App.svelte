@@ -1,51 +1,45 @@
 <script>
   import { onMount, afterUpdate } from 'svelte'
   import { Client } from './client'
-  import Canvas, { canvas, context } from './Canvas.svelte'
+  import Canvas, { context } from './Canvas.svelte'
   import render from './render.js'
   import config from './config.js'
   import Modal from './Modal.svelte'
   import Core from './Core.svelte'
-  import { width, height } from './store.js'
+  import { width, height, connectionStatus, inGameStatus } from './store.js'
+  import { Jumper } from 'svelte-loading-spinners'
 
-
-  let player_cells = []
-  let food_cells = []
   let playerPos = {x: 0, y: 0}
-  let gameData
-  let inGame = false
+  let gameData = {}
   let target
-  let mouseInterval
+  let setTargetInterval
   let targetUpdated = false
+  let core
 
-  const gameStarted = () => {
-    inGame = true
-    mouseInterval = setInterval(() => {
-      if (client.connected() && inGame && target && targetUpdated) {
+
+  const client = new Client('ws://192.168.1.52:8080')
+  client.connect()
+  client.handleNotifications['update'] = handleUpdate
+  client.handleNotifications['pong'] = () => {}
+  client.handleNotifications['notify_game_over'] = () => {$inGameStatus = false}
+
+  function startGame() {
+    setTargetInterval = setInterval(() => {
+      if ($connectionStatus && $inGameStatus && targetUpdated) {
         client.notify("target", target)
         targetUpdated = false
       }
     }, 1000/60)
   }
 
-  const gameOver = () => {
-    inGame = false
-    if (mouseInterval) {
-      clearInterval(mouseInterval)
+  function stopGame() {
+    if (setTargetInterval) {
+      clearInterval(setTargetInterval)
     }
   }
 
-  const client = new Client('ws://192.168.1.52:8080')
-  client.connect()
-  client.handleNotifications['update'] = handleUpdate
-  client.handleNotifications['pong'] = () => {}
-  client.handleNotifications['notify_game_started'] = gameStarted
-  client.handleNotifications['notify_game_over'] = gameOver
-
-
   function handleUpdate(data) {
     // update inGame status incase we missed game started notification
-    inGame = true
     playerPos.x = data.x
     playerPos.y = data.y
     gameData = data
@@ -57,7 +51,7 @@
 
 
   function onMouseMove(event) {
-    if (client.connected() && inGame) {
+    if ($connectionStatus && $inGameStatus) {
       const centerX = $width / 2
       const centerY = $height / 2
       const dx =  event.clientX - centerX
@@ -73,27 +67,41 @@
 
   function onKeyDown(event) {
     if (event.keyCode === 32) {
-      if (client.connected() && inGame) {
+      if ($connectionStatus && $inGameStatus) {
         client.notify('split')
       }
     }
   }
 
 
-  setInterval(() => {
-    if (client.connected()) {
-      client.notify('ping')
+  // setInterval(() => {
+  //   if (client.connected()) {
+  //     client.notify('ping')
+  //   }
+  // }, 1000)
+
+  function onInGameStatusChange(status) {
+    if (status === true) {
+      startGame()
+    } else {
+      stopGame()
     }
-  }, 1000)
+  }
 
+  function onConnectionStatusChange(status) {
+    if (status === false) {
+      stopGame()
+    }
+  }
 
-
+  $: onInGameStatusChange($inGameStatus)
+  $: onConnectionStatusChange($connectionStatus)
 </script>
 
 
 <svelte:window on:keydown={onKeyDown} on:mousemove={onMouseMove} ></svelte:window>
 <Modal>
-  <Core {client}/>
+  <Core bind:this={core} {client}/>
   <Canvas render={renderFrame}></Canvas>
 </Modal>
 
@@ -104,4 +112,5 @@
 		margin: 0;
 		padding: 0;
 	}
+
 </style>
