@@ -2,10 +2,14 @@
 import config from './config.js'
 
 
-function renderUpdate(context, data, canvasWidth, canvasHeight) {
+let foodRadius = 10
+function generateRandomHue() {
+  return Math.floor(Math.random() * 360)
+}
+
+function renderUpdate(context, data, canvasWidth, canvasHeight, visible) {
   if (!data) return
   const center = {x: data.x, y: data.y}
-  const visible = data.visible
   const scale = Math.max(canvasWidth, canvasHeight) / visible
   const topLeft = {
     x: center.x - visible / 2,
@@ -41,21 +45,23 @@ function draw_player_cells(context, topLeft, scale, shiftW, shiftH, cells) {
     context.arc(x, y, radius, 0, Math.PI * 2)
     context.fill()
   })
+  context.stroke()
 }
 
 function draw_food_cells(context, topLeft, scale, shiftW, shiftH, food_cells) {
+  const radius = foodRadius * scale
   if (!food_cells) return
   food_cells.forEach(cell => {
     // reset all positions with respect to top left of canvas
     const x = ((cell.pos.x - topLeft.x) * scale) - shiftW
     const y = ((config.gameHeight - cell.pos.y - topLeft.y) * scale) - shiftH
-    const radius = cell.radius * scale
     context.beginPath();
     context.strokeStyle = `hsl( ${cell.hue} , 100%, 45%)`
     context.fillStyle = `hsl( ${cell.hue} , 100%, 50%)`
     context.arc(x, y, radius, 0, Math.PI * 2)
     context.fill()
   })
+  context.stroke()
 }
 
 let gridSize = 50

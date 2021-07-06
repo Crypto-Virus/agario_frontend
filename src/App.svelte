@@ -8,14 +8,20 @@
   import Core from './Core.svelte'
   import { width, height, connectionStatus, inGameStatus } from './store.js'
   import { Jumper } from 'svelte-loading-spinners'
+import { writable } from 'svelte/store';
 
   let playerPos = {x: 0, y: 0}
   let gameData = {}
+  let smoothVisible = .01
+  let currentVisible = 600
   let target
   let setTargetInterval
   let targetUpdated = false
   let core
 
+  function lerp(start, end, smooth) {
+    return ( 1 - smooth) * start + smooth * end
+  }
 
   const client = new Client('ws://192.168.1.52:8080')
   client.connect()
@@ -43,10 +49,16 @@
     playerPos.x = data.x
     playerPos.y = data.y
     gameData = data
+    console.log(currentVisible, gameData.visible)
+    if (Math.abs(currentVisible - gameData.visible) < 1) {
+      currentVisible = gameData.visible
+    } else {
+      currentVisible = lerp(currentVisible, gameData.visible, smoothVisible)
+    }
   }
 
   function renderFrame() {
-    render.renderUpdate(context, gameData, $width, $height)
+    render.renderUpdate(context, gameData, $width, $height, currentVisible)
   }
 
 
