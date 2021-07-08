@@ -19,7 +19,7 @@
 
 
 {#if !$connectionStatus}
-<div class="connectingContainer">
+<div class="connecting-container">
     <h3>Connecting</h3>
     <Circle3 size="60" color="red" unit="px" duration="1.5s"></Circle3>
   </div>
@@ -33,7 +33,7 @@
 {/if}
 
 {#if $modalErrorMsg}
-<div class="error">
+<div class="error-container">
   <p>{$modalErrorMsg}</p>
 </div>
 {/if}
@@ -55,11 +55,11 @@
     flex-grow: 1;
   }
 
-  .error p {
+  .error-container p {
     color: red;
   }
 
-  .connectingContainer {
+  .connecting-container {
     display: flex;
     flex-direction: column;
     justify-content: center;

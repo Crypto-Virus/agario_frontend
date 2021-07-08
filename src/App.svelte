@@ -50,16 +50,16 @@ import { writable } from 'svelte/store';
 
   function handleUpdate(data) {
     gameData = {...gameData, ...data}
+  }
+
+  function renderFrame() {
     if (!currentVisible) {
       currentVisible = gameData.visible
-    } else if (Math.abs(currentVisible - gameData.visible) < 1) {
+    } else if (Math.abs(currentVisible - gameData.visible) < .1) {
       currentVisible = gameData.visible
     } else {
       currentVisible = lerp(currentVisible, gameData.visible, smoothVisible)
     }
-  }
-
-  function renderFrame() {
     render.renderUpdate(context, gameData, $width, $height, $pixelRatio, currentVisible)
   }
 

@@ -3,7 +3,6 @@
   import { getContext } from 'svelte'
 
   import Dialog from './Dialog.svelte'
-  import GameOverDialog from './GameOverDialog.svelte'
   import { inGameStatus } from './store.js'
 
   export let client
@@ -43,13 +42,13 @@
     )
   }
 
-  export function gameOverMenu() {
+  export function openGameOverMenu() {
     open(
-      GameOverDialog,
+      Dialog,
       {
+        message: "Oops... you died! 😭",
         modalErrorMsg,
-        hasForm: true,
-        onOkay
+        play
       },
       {
         closeButton: false,
@@ -62,8 +61,9 @@
 
   openDialog()
 
-
-
+  $: if ($inGameStatus === false) {
+    openGameOverMenu()
+  }
 
 
 </script>
