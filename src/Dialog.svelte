@@ -3,7 +3,8 @@
   import { Circle3 } from 'svelte-loading-spinners'
   import { connectionStatus } from './store.js'
 
-  export let message = "Click to Play";
+  export let message;
+  export let buttonMsg;
   export let modalErrorMsg;
   export let play = () => {};
 
@@ -27,7 +28,7 @@
   <h2>{message}</h2>
   <div class="buttons">
     <button on:click={_play}>
-      Play
+      {buttonMsg}
     </button>
   </div>
 {/if}

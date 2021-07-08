@@ -30,7 +30,8 @@
     open(
       Dialog,
       {
-        message: "Enter player name",
+        message: "Press 'Play' to start",
+        buttonMsg: "Play",
         modalErrorMsg,
         play
       },
@@ -47,6 +48,7 @@
       Dialog,
       {
         message: "Oops... you died! 😭",
+        buttonMsg: "Plag Again",
         modalErrorMsg,
         play
       },
