@@ -44,10 +44,12 @@ function draw_player_cells(context, topLeft, scale, shiftW, shiftH, cells) {
     context.beginPath();
     context.strokeStyle = `hsl( ${cell.hue} , 100%, 45%)`
     context.fillStyle = `hsl( ${cell.hue} , 100%, 50%)`
+    context.lineWidth = 10
     context.arc(x, y, radius, 0, Math.PI * 2)
     context.fill()
+    context.stroke()
   })
-  context.stroke()
+
 }
 
 function draw_food_cells(context, topLeft, scale, shiftW, shiftH, food_cells) {
@@ -62,8 +64,8 @@ function draw_food_cells(context, topLeft, scale, shiftW, shiftH, food_cells) {
     context.fillStyle = `hsl( ${cell.hue} , 100%, 50%)`
     context.arc(x, y, radius, 0, Math.PI * 2)
     context.fill()
+    context.stroke()
   })
-  context.stroke()
 }
 
 let gridSize = 50
