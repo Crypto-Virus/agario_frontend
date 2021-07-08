@@ -10,10 +10,14 @@
   import { Jumper } from 'svelte-loading-spinners'
 import { writable } from 'svelte/store';
 
-  let playerPos = {x: 0, y: 0}
-  let gameData = {}
+  let gameData = {
+    position: {x: 0, y: 0},
+    visible: 0,
+    cells: [],
+    food: [],
+  }
   let smoothVisible = .01
-  let currentVisible = 600
+  let currentVisible
   let target
   let setTargetInterval
   let targetUpdated = false
@@ -45,12 +49,10 @@ import { writable } from 'svelte/store';
   }
 
   function handleUpdate(data) {
-    // update inGame status incase we missed game started notification
-    playerPos.x = data.x
-    playerPos.y = data.y
     gameData = data
-    console.log(currentVisible, gameData.visible)
-    if (Math.abs(currentVisible - gameData.visible) < 1) {
+    if (!currentVisible) {
+      currentVisible = gameData.visible
+    } else if (Math.abs(currentVisible - gameData.visible) < 1) {
       currentVisible = gameData.visible
     } else {
       currentVisible = lerp(currentVisible, gameData.visible, smoothVisible)

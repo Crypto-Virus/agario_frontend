@@ -8,8 +8,7 @@ function generateRandomHue() {
 }
 
 function renderUpdate(context, data, canvasWidth, canvasHeight, visible) {
-  if (!data) return
-  const center = {x: data.x, y: data.y}
+  const center = data.position
   const scale = Math.max(canvasWidth, canvasHeight) / visible
   const topLeft = {
     x: center.x - visible / 2,
