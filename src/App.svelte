@@ -49,7 +49,7 @@ import { writable } from 'svelte/store';
   }
 
   function handleUpdate(data) {
-    gameData = data
+    gameData = {...gameData, ...data}
     if (!currentVisible) {
       currentVisible = gameData.visible
     } else if (Math.abs(currentVisible - gameData.visible) < 1) {
