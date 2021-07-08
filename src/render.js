@@ -7,7 +7,7 @@ function generateRandomHue() {
   return Math.floor(Math.random() * 360)
 }
 
-function renderUpdate(context, data, canvasWidth, canvasHeight, visible) {
+function renderUpdate(context, data, canvasWidth, canvasHeight, pixelRatio, visible) {
   const center = data.position
   const scale = Math.max(canvasWidth, canvasHeight) / visible
   const topLeft = {
@@ -22,12 +22,15 @@ function renderUpdate(context, data, canvasWidth, canvasHeight, visible) {
   } else if (canvasHeight > canvasWidth) {
     shiftW = (canvasHeight - canvasWidth) / 2
   }
+  context.save()
+  context.scale(pixelRatio, pixelRatio)
   context.clearRect(0, 0, canvasWidth, canvasHeight)
   drawGrid(context, canvasWidth, canvasHeight, topLeft, scale, shiftW, shiftH)
   draw_food_cells(context, topLeft, scale, shiftW, shiftH, data.food)
   draw_player_cells(context, topLeft, scale, shiftW, shiftH, data.cells)
   context.stroke()
   drawFps(context)
+  context.restore()
 
 }
 

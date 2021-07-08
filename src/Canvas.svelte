@@ -66,7 +66,7 @@
   bind:this={canvas}
   width={$width * $pixelRatio}
   height={$height * $pixelRatio}
-  style="width: {$width * $pixelRatio}px; height: {$height * $pixelRatio}px;"
+  style="width: {$width}px; height: {$height}px;"
 />
 <svelte:window on:resize|passive={handleResize}/>
 

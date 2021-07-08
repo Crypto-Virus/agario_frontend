@@ -6,7 +6,7 @@
   import config from './config.js'
   import Modal from './Modal.svelte'
   import Core from './Core.svelte'
-  import { width, height, connectionStatus, inGameStatus } from './store.js'
+  import { width, height, connectionStatus, inGameStatus, pixelRatio } from './store.js'
   import { Jumper } from 'svelte-loading-spinners'
 import { writable } from 'svelte/store';
 
@@ -60,7 +60,7 @@ import { writable } from 'svelte/store';
   }
 
   function renderFrame() {
-    render.renderUpdate(context, gameData, $width, $height, currentVisible)
+    render.renderUpdate(context, gameData, $width, $height, $pixelRatio, currentVisible)
   }
 
 
