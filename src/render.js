@@ -34,38 +34,43 @@ function renderUpdate(context, data, canvasWidth, canvasHeight, pixelRatio, visi
 
 }
 
-function draw_player_cells(context, topLeft, scale, shiftW, shiftH, cells) {
-  if (!cells) return
-  cells.forEach(cell => {
-    // reset all positions with respect to top left of canvas
-    const x = ((cell.pos.x - topLeft.x) * scale) - shiftW
-    const y = ((config.gameHeight - cell.pos.y - topLeft.y) * scale) - shiftH
-    const radius = cell.radius * scale
-    context.beginPath();
-    context.strokeStyle = `hsl( ${cell.hue} , 100%, 45%)`
-    context.fillStyle = `hsl( ${cell.hue} , 100%, 50%)`
-    context.lineWidth = 10
-    context.arc(x, y, radius, 0, Math.PI * 2)
-    context.fill()
-    context.stroke()
-  })
+function draw_player_cells(context, topLeft, scale, shiftW, shiftH, cells_updates) {
+  if (!cells_updates) return
+  cells_updates.forEach(cells_update => {
+    cells_update.forEach(cell => {
+      // reset all positions with respect to top left of canvas
+      const x = ((cell.pos.x - topLeft.x) * scale) - shiftW
+      const y = ((config.gameHeight - cell.pos.y - topLeft.y) * scale) - shiftH
+      const radius = cell.radius * scale
+      context.beginPath();
+      context.strokeStyle = `hsl( ${cell.hue} , 100%, 45%)`
+      context.fillStyle = `hsl( ${cell.hue} , 100%, 50%)`
+      context.lineWidth = 10
+      context.arc(x, y, radius, 0, Math.PI * 2)
+      context.fill()
+      context.stroke()
+    });
+  });
+
 
 }
 
-function draw_food_cells(context, topLeft, scale, shiftW, shiftH, food_cells) {
+function draw_food_cells(context, topLeft, scale, shiftW, shiftH, food_updates) {
+  if (!food_updates) return
   const radius = foodRadius * scale
-  if (!food_cells) return
-  food_cells.forEach(cell => {
-    // reset all positions with respect to top left of canvas
-    const x = ((cell.pos.x - topLeft.x) * scale) - shiftW
-    const y = ((config.gameHeight - cell.pos.y - topLeft.y) * scale) - shiftH
-    context.beginPath();
-    context.strokeStyle = `hsl( ${cell.hue} , 100%, 45%)`
-    context.fillStyle = `hsl( ${cell.hue} , 100%, 50%)`
-    context.arc(x, y, radius, 0, Math.PI * 2)
-    context.fill()
-    context.stroke()
-  })
+  food_updates.forEach(food_update => {
+    food_update.forEach(cell => {
+      // reset all positions with respect to top left of canvas
+      const x = ((cell.pos.x - topLeft.x) * scale) - shiftW
+      const y = ((config.gameHeight - cell.pos.y - topLeft.y) * scale) - shiftH
+      context.beginPath();
+      context.strokeStyle = `hsl( ${cell.hue} , 100%, 45%)`
+      context.fillStyle = `hsl( ${cell.hue} , 100%, 50%)`
+      context.arc(x, y, radius, 0, Math.PI * 2)
+      context.fill()
+      context.stroke()
+    });
+  });
 }
 
 let gridSize = 50
