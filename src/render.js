@@ -7,12 +7,11 @@ function generateRandomHue() {
   return Math.floor(Math.random() * 360)
 }
 
-function renderUpdate(context, data, canvasWidth, canvasHeight, pixelRatio, visible) {
-  const center = data.position
+function renderUpdate(context, data, canvasWidth, canvasHeight, pixelRatio, cameraPosition, visible) {
   const scale = Math.max(canvasWidth, canvasHeight) / visible
   const topLeft = {
-    x: center.x - visible / 2,
-    y: config.gameHeight - center.y - visible / 2,
+    x: cameraPosition.x - visible / 2,
+    y: config.gameHeight - cameraPosition.y - visible / 2,
   }
 
   let shiftH = 0

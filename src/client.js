@@ -10,11 +10,13 @@ export class Client {
     this.promises = {}
     this.onConnectionRequests = []
     this.handleNotifications = {}
+    this.handleBinaryNotifications = {}
   }
 
   connect() {
     if (!this.connected()) {
       this.socket = new WebSocket(this.url)
+      this.socket.binaryType = "arraybuffer"
       this.socket.onopen = this.onopen
       this.socket.onmessage = this.onmessage
       this.socket.close = this.onclose
@@ -44,8 +46,12 @@ export class Client {
   }
 
   onmessage = (event) => {
-    // console.log(`Received Message: ${event.data}`)
-    this.dateReceived(event.data)
+    if(event.data instanceof ArrayBuffer) {
+      this.binaryReceived(event.data)
+    } else {
+      // console.log(`Received Message: ${event.data}`)
+      this.dateReceived(event.data)
+    }
   }
 
   reconnect() {
@@ -123,6 +129,18 @@ export class Client {
     }
     else if (method) {
       this.notificationReceived(message)
+    }
+  }
+
+  binaryReceived(data) {
+    const view = new DataView(data, 0, 1);
+    const nType = view.getUint8(0)
+    const method = this.handleBinaryNotifications[nType]
+    if (method) {
+      const dataView = new DataView(data, 1)
+      method(dataView)
+    } else {
+      console.log(`Binary notification has no handler. Type [${nType}]`)
     }
   }
 
