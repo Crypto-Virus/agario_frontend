@@ -1,15 +1,15 @@
 import {writable, derived} from 'svelte/store'
 
-export const width = writable(window.innerWidth)
-export const height = writable(window.innerHeight)
-export const pixelRatio = writable(window.devicePixelRatio)
 
 export const connectionStatus = writable(false)
 export const inGameStatus = writable(null)
 
-export const props = {
-  width,
-  height,
-  pixelRatio,
+export const gameData = {
+  gameHeight: 5000,
+  gameWidth: 5000,
+  position: {x: 0, y: 0},
+  topLeft: {x: 0, y: 0},
+  visible: 0,
+  cells: [],
+  food: [],
 }
-
