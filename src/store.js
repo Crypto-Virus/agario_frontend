@@ -3,6 +3,7 @@ import {writable, derived} from 'svelte/store'
 
 export const connectionStatus = writable(false)
 export const inGameStatus = writable(null)
+export const scores = writable([])
 
 export const gameData = {
   gameHeight: 5000,

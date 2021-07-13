@@ -1,5 +1,5 @@
 <script>
-import { renderable } from "./Canvas.svelte";
+  import { renderable } from "./Canvas.svelte";
 
   export let text = ''
   export let color = 'hsl(0, 0%, 0%)'

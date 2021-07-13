@@ -21,7 +21,7 @@
 
 <Text
   {text}
-  fontSize = 12
+  fontSize=12
   fontFamily='Courier New'
   align='left'
   baseline='top'

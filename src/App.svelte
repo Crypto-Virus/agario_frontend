@@ -6,9 +6,10 @@
   import FoodCells from './FoodCells.svelte'
   import PlayerCells from './PlayerCells.svelte'
   import FPS from './FPS.svelte'
+  import Scoreboard from './Scoreboard.svelte'
   import Modal from './Modal.svelte'
   import Core from './Core.svelte'
-  import {connectionStatus, inGameStatus, gameData} from './store.js'
+  import {connectionStatus, inGameStatus, gameData, scores} from './store.js'
 
 
 
@@ -24,6 +25,12 @@
   const client = new Client('ws://192.168.1.52:8080')
   client.connect()
   client.handleNotifications['pong'] = () => {}
+  client.handleNotifications['notify_update_metadata'] = (metadata) => {
+    const scores_ = metadata.scores
+    if (scores_) {
+      $scores = scores_
+    }
+  }
   client.handleNotifications['notify_game_over'] = () => {
     $inGameStatus = false
     currentVisible = null
@@ -152,6 +159,7 @@
       <PlayerCells/>
     </Camera>
     <FPS/>
+    <Scoreboard/>
   </Canvas>
 
 </Modal>

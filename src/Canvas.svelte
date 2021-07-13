@@ -18,6 +18,7 @@
     onMount(() => {
       element.mounted = true
       return() => {
+        console.log('removing entity')
         api.remove(element)
         element.mounted = false
       }
@@ -48,7 +49,6 @@
         let p = entity.setup({context, width, height})
         if (p && p.then) await p
       }
-      entity.ready = true
     })
   })
 
@@ -68,7 +68,7 @@
     context.scale(pixelRatio, pixelRatio)
     listeners.forEach(entity => {
       try {
-        if (entity.mounted && entity.ready && entity.render) {
+        if (entity.mounted && entity.render) {
           entity.render({context, width, height})
         }
       } catch (err) {
